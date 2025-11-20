@@ -1,2 +1,50 @@
 body {
+    background-color:antiquewhite;
+    font-family: Kindhearted, cursive;
 }
+h1 {
+    text-align: center;
+}
+#calculator{
+    background-color:whitesmoke;
+    width:500px;
+    margin:0 auto;
+    padding:16px;
+}
+
+.row {
+    height:100px;
+    width:100%;
+    display:flex;
+}
+.row button {
+    flex-basis:100px;
+    flex-grow:1;
+    margin:6px;
+    font-size:2em;
+    font-family:inherit;
+    border:2px solid antiquewhite;
+
+}
+.row button:hover {
+    background-color: antiquewhite;
+}
+
+.row button:active {
+    background-color: rgb(247, 232, 214);
+}
+.row .screen {
+    flex-basis:300px;
+    flex-grow: 3;
+    background-color:antiquewhite;
+    margin:6px;
+    border-radius:6px;
+    font-size:32px;
+    padding:.5em;
+    display:flex;
+    justify-content:right;
+}
+.row .screen span {
+    justify-self:right;
+}
+
