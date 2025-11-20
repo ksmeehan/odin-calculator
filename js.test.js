@@ -4,6 +4,8 @@ import {
     calculation,
 } from './js.js'
 
+
+
 test('adds 1 + 2 to equal 3', () => {
   expect(operations["+"](1, 2)).toBe(3)
 })
@@ -29,6 +31,13 @@ test('calculation returns correct for +*/-', () => {
     expect(calculation(3, "*", -4)).toBe(-12);
     expect(calculation(4, "/", 2)).toBe(2);
     expect(calculation(1, "-", 3)).toBe(-2);
+})
+
+test('string contains an operation', () => {
+    expect(operations.hasOp("123*098")).toBe(true);
+    expect(operations.hasOp("/12098")).toBe(true);
+    expect(operations.hasOp("123098+")).toBe(true);
+    expect(operations.hasOp("1-2")).toBe(true);
 })
 
 

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ksmeehan/odin-calculator#readme",
   "devDependencies": {
+    "jsdom": "^27.2.0",
     "vitest": "^4.0.10"
   }
 }
