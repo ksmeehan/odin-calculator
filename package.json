@@ -1,0 +1,22 @@
+{
+  "name": "odin-calculator",
+  "version": "1.0.0",
+  "description": "\"The Odin Project Calculator project\"",
+  "main": "js.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ksmeehan/odin-calculator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ksmeehan/odin-calculator/issues"
+  },
+  "homepage": "https://github.com/ksmeehan/odin-calculator#readme",
+  "devDependencies": {
+    "vitest": "^4.0.10"
+  }
+}
