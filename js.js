@@ -3,9 +3,7 @@ let uneditable = false;
 
 document.querySelector("#calculator").addEventListener("click", (event) => {
             //hide divide by zero msg if exists
-            const msg = document.querySelector(".zero");
-            msg.style.display = "none";
-
+            const msg = document.querySelector(".zero").style.display = "none";
 
             //console.log(event.target);
             let value = event.target.innerText;
@@ -25,11 +23,16 @@ document.querySelector("#calculator").addEventListener("click", (event) => {
             } else if (operations.validOperations.includes(value)) {
                 //if the user input an operator
 
-                //check for if there's one already?
-                if(operations.hasOp(screenObj.innerText)){
-                    // there is one!
+                //return false if there is no left side!
+                let eq = getEquationParts(screenObj.innerText);
+                if(!eq.left) return false;
 
-                    if(doesStrEndInOp(screenObj.innerText)){
+
+                //check for if there's one already?
+                if(eq.operation){
+                    // there is one!
+                    
+                    if(!eq.right){
                         //last input character is an operation
                         //then replace it with the new operaiton!
                         screenObj.innerText = switchLastChar(screenObj.innerText, value)
