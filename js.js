@@ -1,19 +1,7 @@
-console.log("js script attached")
-
-let leftVariable = {
-    value: undefined,
-};
-
-let operator = {
-    value: undefined,
-};
-
-let rightVariable = {
-    value: undefined,
-};
-
-
 document.querySelector("#calculator").addEventListener("click", (event) => {
+            //hide divide by zero msg if exists
+            const msg = document.querySelector(".zero");
+            msg.style.display = "none";
             //console.log(event.target);
             let value = event.target.innerText;
             let screenObj = document.querySelector(".screen");
@@ -31,18 +19,16 @@ document.querySelector("#calculator").addEventListener("click", (event) => {
                 //check for if there's one already?
                 if(operations.hasOp(screenObj.innerText)){
                     // there is one!
-                    // let innerText = screenObj.innerText;
-                    // let lastChar = innerText.at((innerText.length)-1);
 
                     if(doesStrEndInOp(screenObj.innerText)){
                         //last input character is an operation
                         //then replace it with the new operaiton!
-                        console.log(value);
                         screenObj.innerText = switchLastChar(screenObj.innerText, value)
 
                     } else {
                         //input is not last, time to...
                         evaluate();
+                        screenObj.innerText += value;
                     }
                    // console.log(lastChar);
 
@@ -58,7 +44,13 @@ document.querySelector("#calculator").addEventListener("click", (event) => {
             } else if(value === "."){
                 let eq = getEquationParts(screenObj.innerText);
                 if(eq.left && !eq.operation) {
-
+                    if(!eq.left.includes(".")){
+                        screenObj.innerText += value;
+                    }
+                } else if (eq.right){
+                    if(!eq.right.includes(".")){
+                        screenObj.innerText += value;
+                    }
                 }
             }
 
@@ -93,6 +85,15 @@ function evaluate(){
         return false;
     }
     let eq = getEquationParts(input);
+
+    //check for divide by zero
+    if(eq.operation =="/" && eq.right == 0){
+        console.error("Divide by zero.");
+        //show divide by zero msg
+        const msg = document.querySelector(".zero");
+        msg.style.display = "flex";
+        return false;
+    }
 
     let ans = operations[eq.operation](+eq.left, +eq.right);
     console.log(`"${eq.left}" "${eq.operation}" "${eq.right}" = ${ans}`);
@@ -132,10 +133,22 @@ function doesStrEndInOp(str){
 
 let operations = {
         validOperations : "*+-/",//
-        "*" : function (a,b) {return a*b},
-        "+" : function (a,b) {return a+b},
-        "-" : function (a,b) {return a-b},
-        "/" : function (a,b) {return a/b},
+        "*" : function (a,b) {return this.toPrecision(a*b)},
+        "+" : function (a,b) {return this.toPrecision(a+b)},
+        "-" : function (a,b) {return this.toPrecision(a-b)},
+        "/" : function (a,b) {return this.toPrecision(a/b)},
+        /**
+         * rounds number to 5 precision
+         *
+         * @param {string} num - The number to be rounded
+         * @returns {boolean} the rounded number
+         */
+        toPrecision(num){
+            num = num * 100000;
+            num = Math.floor(num);
+            num = num/100000
+            return num;
+        },
         hasOp : function(str) {
             for(let i = 0; i < this.validOperations.length; i++){
                 if (str.includes(this.validOperations.at(i))) return true;
