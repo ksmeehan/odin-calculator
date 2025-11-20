@@ -1,7 +1,12 @@
+//if a number happens when it's uneditable, it will be cleared.
+let uneditable = false;
+
 document.querySelector("#calculator").addEventListener("click", (event) => {
             //hide divide by zero msg if exists
             const msg = document.querySelector(".zero");
             msg.style.display = "none";
+
+
             //console.log(event.target);
             let value = event.target.innerText;
             let screenObj = document.querySelector(".screen");
@@ -9,6 +14,10 @@ document.querySelector("#calculator").addEventListener("click", (event) => {
             let digits = "0987654321";
 
             if(digits.includes(value)){
+                if(uneditable) {
+                    refreshScreen();
+                    uneditable = false;
+                }
                 //add the next digit to the screen.
                 console.log(value);
                 screenObj.innerText += value;
@@ -34,6 +43,7 @@ document.querySelector("#calculator").addEventListener("click", (event) => {
 
                 }else {
                     //there is no operator in the the text already
+                    uneditable = false;
                     screenObj.innerText +=value;
                 }
                 
@@ -42,6 +52,10 @@ document.querySelector("#calculator").addEventListener("click", (event) => {
             } else if(value === "Clear"){
                 refreshScreen();
             } else if(value === "."){
+                if(uneditable){
+                    refreshScreen();
+                    uneditable = false;
+                }
                 let eq = getEquationParts(screenObj.innerText);
                 if(eq.left && !eq.operation) {
                     if(!eq.left.includes(".")){
@@ -98,6 +112,7 @@ function evaluate(){
     let ans = operations[eq.operation](+eq.left, +eq.right);
     console.log(`"${eq.left}" "${eq.operation}" "${eq.right}" = ${ans}`);
     refreshScreen(ans);
+    uneditable = true;
 }
 
 function refreshScreen(newValue = ""){
