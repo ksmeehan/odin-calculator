@@ -1,13 +1,33 @@
 console.log("js script attached")
 
-function sum(a,b){return a+b;}
-function sub(a,b){return a-b;}
-function product(a,b) {return a*b;}
-function divide(a,b) {return a/b;}
+let leftVariable = {
+    value: undefined,
+};
+
+let operator = {
+    value: undefined,
+};
+
+let rightVariable = {
+    value: undefined,
+};
+
+
+
+let operations = {
+        validOperations : "*+-/",//
+        "*" : function (a,b) {return a*b},
+        "+" : function (a,b) {return a+b},
+        "-" : function (a,b) {return a-b},
+        "/" : function (a,b) {return a/b},
+    }
+
+function calculation(a, operation, b){
+    if(!operations.validOperations.includes(operation)) return "ERROR!";
+    return operations[operation](a,b);
+}
 
 module.exports = {
-    sum, 
-    sub,
-    product,
-    divide,
+    operations,
+    calculation,
 }
