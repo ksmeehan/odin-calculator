@@ -1,191 +1,138 @@
 //if a number happens when it's uneditable, it will be cleared.
 let uneditable = false;
 
+function t1() {
+    Calc.placeDigit("2");
+    Calc.placeDigit("2");
+    Calc.placeOperator("+");
+    Calc.placeDigit("4");
+    let result = Calc.eval();
+    console.log(`result: ${result}`);
+    if (Calc.left === 22 && Calc.right === 4 && Calc.operator === "+" && result === 26) {
+        console.log("t1 pass!");
+    } else { console.log("t1 failed!") }
+}
+
+let Calc = {
+    left: null,
+    right: null,
+    operator: null,
+    freezeScreen: false,
+    showAnswer: false,
+    getBtnType: function (str) { //digit, equals, operator, clear, point
+        if (str === "Clear") return "clear";
+        if (str.length != 1) {
+            console.warn("ERROR! invalid value.");
+            return undefined;
+        }
+        if ("1234567890".includes(str)) return "digit";
+        if (str === "=") return "equals";
+        if ("+-*/".includes(str)) return "operator";
+        if (str === ".") return "point"
+    },
+    placeDigit: function (digit) {
+        if (this.left === null) this.left = Number(digit);
+        else if (this.operator === null) this.left = Number(String(this.left) + digit);
+        else if (this.right === null) this.right = Number(digit);
+        else this.right = Number(String(this.right) + digit);
+        console.log(this.getEq());
+    },
+    placeOperator: function (operator) {
+        this.operator = operator;
+        console.log(this.getEq());
+    },
+    getEq: function () {
+        let eqText = (this.left === null ? "" : this.left) + " " +
+            (this.operator === null ? "" : this.operator) + " " +
+            (this.right === null ? "" : this.right)
+        // console.log(eqText);
+        return eqText;
+    },
+    clear: function () {
+        this.left = null;
+        this.operator = null;
+        this.right = null;
+    },
+    eval: function () {
+        if (this.left === null || this.operator === null || this.right === null) {
+            console.warn(`Invalid eval: attempted "${this.left}" "${this.operator}" "${this.right}"`);
+            return false;
+        }
+        switch (this.operator) {
+            case "+":
+                this.showAnswer = true;
+                return this.left + this.right;
+                break;
+            case "-":
+                this.showAnswer = true;
+                return this.left - this.right;
+                break;
+            case "*":
+                this.showAnswer = true;
+                return this.left * this.right;
+                break;
+            case "/":
+                if (this.left === 0) {
+                    console.warn("attempted divide by zero.");
+                    return false;
+                }
+                return this.left / this.right;
+        }
+    },
+}
+
+
+
 document.querySelector("#calculator").addEventListener("click", (event) => {
-            //hide divide by zero msg if exists
-            const msg = document.querySelector(".zero").style.display = "none";
+    //hide divide by zero msg if exists
+    const msg = document.querySelector(".zero").style.display = "none";
 
-            //console.log(event.target);
-            let value = event.target.innerText;
-            let screenObj = document.querySelector(".screen");
+    //console.log(event.target);
+    let input = event.target.innerText;
+    let screenNode = document.querySelector(".screen");
 
-            if("0987654321".includes(value)){
-                if(uneditable) {
-                    refreshScreen();
-                    uneditable = false;
-                }
-                //add the next digit to the screen.
-                console.log(value);
-                screenObj.innerText += value;
+    let btnType = Calc.getBtnType(input);
 
-            } else if (operations.validOperations.includes(value)) {
-                //if the user input an operator
+    switch (btnType) {
+        case "digit":
+            if(Calc.showAnswer === true) {
+                Calc.clear();
+                Calc.showAnswer = false;
+            }
+            Calc.placeDigit(input);
+            screenNode.innerText = Calc.getEq();
+            break;
+        case "clear":
+            Calc.clear();
+            Calc.showAnswer = false;
+            screenNode.innerText = Calc.getEq();
+            break;
+        case "operator":
+            if(Calc.left === null){
+                //do nothing.
+            }
+            else if(Calc.right === null){
 
-                //return false if there is no left side!
-                let eq = getEquationParts(screenObj.innerText);
-                if(!eq.left) return false;
+                Calc.placeOperator(input);
+                Calc.showAnswer = false;
+                screenNode.innerText = Calc.getEq();
 
-
-                //check for if there's one already?
-                if(eq.operation){
-                    // there is one!
-                    
-                    if(!eq.right){
-                        //last input character is an operation
-                        //then replace it with the new operaiton!
-                        screenObj.innerText = switchLastChar(screenObj.innerText, value)
-
-                    } else {
-                        //input is not last, time to...
-                        evaluate();
-                        screenObj.innerText += value;
-                    }
-                   // console.log(lastChar);
-
-                }else {
-                    //there is no operator in the the text already
-                    uneditable = false;
-                    screenObj.innerText +=value;
-                }
-                
-            } else if(value === "="){
-                evaluate();
-            } else if(value === "Clear"){
-                refreshScreen();
-            } else if(value === "."){
-                if(uneditable){
-                    refreshScreen();
-                    uneditable = false;
-                }
-                let eq = getEquationParts(screenObj.innerText);
-                if(eq.left && !eq.operation) {
-                    if(!eq.left.includes(".")){
-                        screenObj.innerText += value;
-                    }
-                } else if (eq.right){
-                    if(!eq.right.includes(".")){
-                        screenObj.innerText += value;
-                    }
-                }
+            } else { //there is content on the right of the calculator, evaluate.
+                let ans = Calc.eval();
+                Calc.clear()
+                Calc.left = ans;
+                screenNode.innerText = Calc.getEq();     
+                Calc.showAnswer = true;
+           
             }
 
-        })
-
-function getEquationParts(string){
-    let opIndex = operations.getOpIndex(string);
-    if(opIndex === -1){
-        return {
-            left: string,
-            right: null,
-            operation: null
-        }
+            break;
+        case "equals":
+            let ans = Calc.eval();
+            Calc.clear()
+            Calc.left = ans;
+            screenNode.innerText = Calc.getEq();
+            Calc.showAnswer = true;
+            break;
     }
-    let left = string.slice(0, opIndex);
-    let right = string.slice(opIndex+1, string.length);
-    let operation = string.at(opIndex);
-    if(right === '') right = null;
-    return ({
-        left: left,
-        right: right,
-        operation: operation,
-    })
-}
-
-function evaluate(){
-    //if string is well-formed
-    let input = document.querySelector(".screen").innerText;
-    console.log(input);
-    if(doesStrEndInOp(input) || !operations.hasOp(input)){
-        console.warn("Error: String is not correctly formed!");
-        return false;
-    }
-    let eq = getEquationParts(input);
-
-    //check for divide by zero
-    if(eq.operation =="/" && eq.right == 0){
-        console.error("Divide by zero.");
-        //show divide by zero msg
-        const msg = document.querySelector(".zero");
-        msg.style.display = "flex";
-        return false;
-    }
-
-    let ans = operations[eq.operation](+eq.left, +eq.right);
-    console.log(`"${eq.left}" "${eq.operation}" "${eq.right}" = ${ans}`);
-    refreshScreen(ans);
-    uneditable = true;
-}
-
-function refreshScreen(newValue = ""){
-    document.querySelector(".screen").innerText = newValue;
-}
-
-/**
- * Replaces the last character in a string with a given character
- *
- * @param {string} str - The string to be edited
- * @param {string} char - The character to replace the last character of the string
- * @returns {string} The edited string
- */
-function switchLastChar(str, char){
-    let arr = str.split('');
-    arr[arr.length-1] = char;
-    return arr.join('');
-}
-
-/**
- * checks if string ends in operation
- *
- * @param {string} str - The string to be checked
- * @returns {boolean} Whether the string ends in an operation
- */
-function doesStrEndInOp(str){
-    //puts the final character of the string into the hasOp function.
-    let result = operations.hasOp(str.slice(str.length-1));
-    console.log("string ends in op?"+result);
-    return result;
-}
-
-
-let operations = {
-        validOperations : "*+-/",//
-        "*" : function (a,b) {return this.toPrecision(a*b)},
-        "+" : function (a,b) {return this.toPrecision(a+b)},
-        "-" : function (a,b) {return this.toPrecision(a-b)},
-        "/" : function (a,b) {return this.toPrecision(a/b)},
-        /**
-         * rounds number to 5 precision
-         *
-         * @param {string} num - The number to be rounded
-         * @returns {boolean} the rounded number
-         */
-        toPrecision(num){
-            num = num * 100000;
-            num = Math.floor(num);
-            num = num/100000
-            return num;
-        },
-        hasOp : function(str) {
-            for(let i = 0; i < this.validOperations.length; i++){
-                if (str.includes(this.validOperations.at(i))) return true;
-            } return false;
-        },
-        getOpIndex : function(str){
-            for(let i = 0; i < this.validOperations.length; i++){
-                let currentOp = this.validOperations.at(i);
-                if (str.indexOf(currentOp) != -1){
-                    return str.indexOf(currentOp);
-                }
-            } return -1;
-        }
-    }
-
-function calculation(a, operation, b){
-    if(!operations.validOperations.includes(operation)) return "ERROR!";
-    return operations[operation](a,b);
-}
-let module = {}
-module.exports = {
-    operations,
-    calculation,
-}
+});
