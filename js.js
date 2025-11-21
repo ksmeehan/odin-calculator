@@ -9,9 +9,7 @@ document.querySelector("#calculator").addEventListener("click", (event) => {
             let value = event.target.innerText;
             let screenObj = document.querySelector(".screen");
 
-            let digits = "0987654321";
-
-            if(digits.includes(value)){
+            if("0987654321".includes(value)){
                 if(uneditable) {
                     refreshScreen();
                     uneditable = false;
